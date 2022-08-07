@@ -1,10 +1,11 @@
 import { Play } from "phosphor-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Header } from "../../components/Header";
 import { CountdownContainer, FormContainer, HomeContainer, MinutesAmountInput, Separator, StartCountdownButton, TaskInput } from "./styles";
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as zod from 'zod'
+import { differenceInSeconds } from 'date-fns'
 
 
 
@@ -21,6 +22,8 @@ interface Cycle {
   id: string;  
   task: string;
   minutesAmount: number;
+  startDate: Date;
+  
 }
 
 export function Home() {
@@ -34,17 +37,29 @@ export function Home() {
     defaultValues: {
       task: '',
       minutesAmount: 0,
+      
     }
 
-    
-
   });
+
+  const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId)
+
+  useEffect(() => {
+   if (activeCycle) {
+     setInterval(() => {
+      setAmountSecondsPassed(differenceInSeconds(new Date(),  activeCycle.startDate ))
+     }, 1000);
+   }
+
+  }, [activeCycle] )
   
   function handleCreateNewCycle(data:any) {
        const newCycle:Cycle = {
           id: String(new Date().getTime()),
           task: data.task,
           minutesAmount: data.minutesAmount,
+          startDate: new Date(),
+
        }
 
        setCycles((state) => [...state, newCycle]);
@@ -54,7 +69,7 @@ export function Home() {
       
   } 
 
-  const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId)
+ 
 
   const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0
 
@@ -62,11 +77,11 @@ export function Home() {
 
   const minutesAmount = Math.floor(currentSeconds / 60)
 
-  const secondsAmnount = currentSeconds % 60 
+  const secondsAmount = currentSeconds % 60 
 
   const minutes = String(minutesAmount).padStart(2, '0')
   
-  const seconds = String(secondsAmnount).padStart(2, '0')
+  const seconds = String(secondsAmount).padStart(2, '0')
 
 
  const task = watch('task')
