@@ -4,6 +4,7 @@ import { CyclesContext } from "../../contexts/CyclesContext";
 import { HistoryContainer, HistoryList, Status } from "./styles";
 import { formatDistanceToNow } from "date-fns";
 import ptBR from "date-fns/esm/locale/pt-BR";
+import { date } from "zod";
 
 export function History() {
 
@@ -32,7 +33,7 @@ export function History() {
        <tr key={cycle.id}>
        <td>{cycle.task}</td>
        <td>{cycle.minutesAmount}minutos</td>
-       <td>{formatDistanceToNow(cycle.startDate, {addSuffix:true,
+       <td>{formatDistanceToNow(new Date(cycle.startDate), {addSuffix:true,
       locale: ptBR})}</td>
 
        <td>
